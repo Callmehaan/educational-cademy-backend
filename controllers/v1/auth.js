@@ -1,5 +1,6 @@
 const userModel = require("../../models/user");
 const banUserModel = require("./../../models/ban-phone");
+const courseUserModel = require("./../../models/course-user");
 const registerValidator = require("./../../validators/register");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -74,9 +75,23 @@ exports.login = async (req, res) => {
         return res.status(401).json({ message: "Password Is Not Valid" });
     }
 
-    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "30 day",
+    });
 
     return res.json({ accessToken });
 };
 
-exports.getMe = async (req, res) => {};
+exports.getMe = async (req, res) => {
+    const userCourses = await courseUserModel
+        .find({ user: req.user._id })
+        .populate("course");
+
+    const courses = [];
+
+    for (const userCourse of userCourses) {
+        courses.push(userCourse.course);
+    }
+
+    return res.json({ ...req.user, courses });
+};

@@ -1,4 +1,14 @@
-const Validator = require('fastest-validator');
+const Validator = require("fastest-validator");
+const joi = require("joi");
+
+const registerValidatorSchema = joi.object({
+    name: joi.string().min(3).max(255).required(),
+    username: joi.string().min(3).max(100).required(),
+    phone: joi.string().required(),
+    email: joi.string().email().min(10).max(100).required(),
+    password: joi.string().min(8).max(24).required(),
+    confirmPassword: joi.ref("password"),
+});
 
 const v = new Validator();
 
@@ -35,4 +45,5 @@ const schema = {
 
 const check = v.compile(schema);
 
-module.exports = check;
+// module.exports = check;
+module.exports = registerValidatorSchema;

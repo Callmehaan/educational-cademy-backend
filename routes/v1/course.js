@@ -4,6 +4,8 @@ const multer = require("multer");
 const multerStorage = require("../../utils/uploader");
 const authMiddleware = require("../../middlewares/auth");
 const isAdminMiddleware = require("../../middlewares/isAdmin");
+const joiValidatorMiddleware = require("./../../middlewares/joiValidator");
+const courseValidatorSchema = require("./../../validators/course.joi");
 
 const router = express.Router();
 
@@ -16,6 +18,7 @@ router
         }).single("cover"),
         authMiddleware,
         isAdminMiddleware,
+        joiValidatorMiddleware(courseValidatorSchema), //Must Try ***
         coursesController.create
     )
     .get(authMiddleware, isAdminMiddleware, coursesController.getAll);
